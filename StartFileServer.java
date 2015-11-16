@@ -23,7 +23,7 @@ public class StartFileServer {
 			}
 
 			fs.setFile("test.txt");
-			Naming.rebind("rmi://localhost:1099/printfile", fs);
+			Naming.rebind("rmi://210.121.154.91:1099/printfile", fs);
 			System.out.println("File Server is Ready");
 
 		}catch(Exception e){
