@@ -2,6 +2,9 @@ package printing;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+
+import javax.print.PrintException;
 import javax.swing.*;
 
 public class InputGUI extends JFrame{
@@ -15,24 +18,28 @@ public class InputGUI extends JFrame{
 		JPanel panel = new JPanel(new FlowLayout());
 		
 		JPanel idPanel = new JPanel(new GridLayout(1,0,5,5));
-		idPanel.add(new JLabel("ID", SwingConstants.RIGHT));
+		idPanel.add(new JLabel("PhoneNumber", SwingConstants.RIGHT));
 		JTextField ID = new JTextField(10);
-		idPanel.add(ID);	
+		idPanel.add(ID);
 		panel.add(idPanel, BorderLayout.NORTH);
-
+/*
 	    JPanel pwPanel = new JPanel(new GridLayout(1,0,5,5));
 	    pwPanel.add(new JLabel("Password", SwingConstants.RIGHT));
 	    JPasswordField password = new JPasswordField(10);
 	    pwPanel.add(password);
 	    panel.add(pwPanel, BorderLayout.CENTER);
-	    
+*/	    
 	    JPanel buttons = new JPanel();
 	    JButton okayButton = new JButton("»Æ¿Œ");
 	    okayButton.addMouseListener(new MouseAdapter(){
 	    	public void mouseClicked(MouseEvent e){
 	    		setUserID(ID.getText());
-	    	    setUserPW(new String(password.getPassword()));
-	    	    new FilePrinting(getUserID(), getUserPW());
+	    	    //setUserPW(new String(password.getPassword()));
+	    	    try {
+					new FilePrinting(getUserID());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 	    	    System.exit(0);	    	    
 	    	}
 	    });
@@ -43,7 +50,7 @@ public class InputGUI extends JFrame{
 	    setTitle("User Info");
 	    
 	    setVisible(true);
-	    setSize(300,150);
+	    setSize(300,120);
 
 	}
 	
@@ -51,15 +58,17 @@ public class InputGUI extends JFrame{
 		this.userID = userID;
 	}
 	
-	private void setUserPW(String userPW){
-		this.userPW = userPW;
-	}
 	public String getUserID(){
 		return userID;
+	}
+	
+	/*
+	private void setUserPW(String userPW){
+		this.userPW = userPW;
 	}
 	
 	public String getUserPW(){
 		return userPW;
 	}
-
+	 */
 }
