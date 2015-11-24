@@ -1,4 +1,8 @@
-import java.net.*; 
+import java.net.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.io.*; 
 
 public class SocketClient { 
@@ -26,7 +30,7 @@ public class SocketClient {
 		try {			
 			in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			out = new PrintWriter(new OutputStreamWriter(s.getOutputStream())); 
-	
+			
 			out.println("Request"); 
 			out.flush();
 			
@@ -44,7 +48,13 @@ public class SocketClient {
 			} catch(Exception e) { 
 				e.printStackTrace(); 
 			}                
-		}        
+		}
+		
+		String[] attr = new String[7];
+		attr = getData();
+		for(int i = 0; i < 7; i++) {
+			System.out.println(attr[i]);
+		}
 	}
 	
 	static void rcvFile(Socket s, String fileName) throws IOException {
@@ -70,5 +80,28 @@ public class SocketClient {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+	}
+	
+	public static String[] getData() {
+		String[] attr = new String[7];
+
+		try {
+			Connection conn = new DBConnection().getConn();
+			PreparedStatement fdQuery = 
+					conn.prepareStatement("SELECT printNo, fileName, attrCopies, attrOt, "
+							+ "attrRange, attr4, attr5 FROM filedata WHERE userID=?;");
+			ResultSet fdRS = null;
+			fdQuery.setString(1, "1234");
+			fdRS = fdQuery.executeQuery();
+			if(fdRS.next() == true) {
+				for(int i = 0; i < 7; i++) {
+					attr[i] = fdRS.getString(i + 1);
+				}
+			}
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+
+		return attr;
 	}
 }
