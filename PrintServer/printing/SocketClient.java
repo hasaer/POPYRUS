@@ -1,15 +1,26 @@
-import java.net.*;
+package printing;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.io.*; 
+
+import javax.swing.JOptionPane; 
 
 public class SocketClient { 
 	public final static int FILE_SIZE = 6022386;
 	private static Socket s;
 	
-	public static void main(String[] args){ 
+	public SocketClient(){ 
 		try { 
 			s = new Socket("210.121.154.91", 11111);
 		} catch(UnknownHostException uhe) { 
@@ -36,9 +47,10 @@ public class SocketClient {
 			
 			String fileName = in.readLine();
 			rcvFile(s, fileName);
-			
+
 			out.println("Quit"); 
 			out.flush(); 
+			
 		} catch(IOException ioe) { 
 			System.out.println("Exception during communication. Server probably closed connection."); 
 		} finally { 
@@ -50,14 +62,9 @@ public class SocketClient {
 			}                
 		}
 		
-		String[] attr = new String[7];
-		attr = getData();
-		for(int i = 0; i < 7; i++) {
-			System.out.println(attr[i]);
-		}
 	}
 	
-	static void rcvFile(Socket s, String fileName) throws IOException {
+	private void rcvFile(Socket s, String fileName) throws IOException {
 		FileOutputStream fos = null;
 		BufferedOutputStream bos = null;
 		int bytesRead;
@@ -69,31 +76,32 @@ public class SocketClient {
 			fos = new FileOutputStream(fileName);
 			bos = new BufferedOutputStream(fos);
 			
-			System.out.println("파일 받는 중");
+			//System.out.println("파일 받는 중");
 			while ((bytesRead = is.read(buffer)) != -1) {
 			    bos.write(buffer, 0, bytesRead);
 			}
 			
 			bos.flush();
 			bos.close();
-			System.out.println("파일 받기 완료");
+			//System.out.println("파일 받기 완료");
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
 	}
 	
-	public static String[] getData() {
+	public String[] getData(String userID) {
 		String[] attr = new String[7];
 
 		try {
 			Connection conn = new DBConnection().getConn();
 			PreparedStatement fdQuery = 
-					conn.prepareStatement("SELECT printNo, fileName, attrCopies, attrOt, "
-							+ "attrRange, attr4, attr5 FROM filedata WHERE userID=?;");
+					conn.prepareStatement("SELECT printNo, fileName, attrCopies, attrOt, attrRange, attrMin, attrMax FROM filedata WHERE userID=?;");
 			ResultSet fdRS = null;
-			fdQuery.setString(1, "1234");
+			fdQuery.setString(1, userID);
+			
 			fdRS = fdQuery.executeQuery();
-			if(fdRS.next() == true) {
+			
+			if(fdRS.next()) {
 				for(int i = 0; i < 7; i++) {
 					attr[i] = fdRS.getString(i + 1);
 				}

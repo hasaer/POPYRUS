@@ -40,7 +40,6 @@ public class InputGUI extends JFrame{
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
-	    	    System.exit(0);	    	    
 	    	}
 	    });
 	    buttons.add(okayButton);
